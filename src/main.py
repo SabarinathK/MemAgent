@@ -3,34 +3,10 @@ from dotenv import load_dotenv
 from mem0 import Memory
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
+from config import mem0_config
 
 load_dotenv()
 
-mem0_config = {
-    "vector_store": {
-        "provider": "chroma",
-        "config": {"path": "./chroma_db", "collection_name": "wellness_chatbot"},
-    },
-    "llm": {
-        "provider": "openai",
-        "config": {
-            "model": "deepseek-r1:1.5b",
-            "openai_base_url": "http://localhost:11434/v1",
-            "api_key": "ollama",
-            "temperature": 0.1,
-        },
-    },
-    "embedder": {
-        "provider": "gemini",
-        "config": {
-            "model": "models/gemini-embedding-2",
-            "embedding_dims": 3072,
-            "api_key": os.getenv("GOOGLE_API_KEY"),
-        },
-    },
-    "history_db_path": "./history.db",
-    "custom_prompt": "Extract only essential facts about the user's identity, preferences, and emotional state. Be extremely concise.",
-}
 
 memory = Memory.from_config(mem0_config)
 
@@ -55,12 +31,9 @@ make is consis ans short answers and do not mention the context in the answer.
 
 """
 
-from pprint import pprint
-
 
 def chat_with_wellness_bot(user_id: str, user_message: str) -> str:
     search_results = memory.search(query=user_message, filters={"user_id": user_id})
-    pprint(search_results)
 
     context_list = []
     if search_results and "results" in search_results:
